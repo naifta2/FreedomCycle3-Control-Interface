@@ -71,7 +71,7 @@ def update_flowrate(root):
     flowrate = read_arduino()
     timestamp = time.time()  # Precise timestamp for each reading
 
-    if Config.flowrate_label and flowrate:  
+    if Config.flowrate_label:  
         Config.flowrate_label.config(text=f"Current Flow Rate: {flowrate} L/min")
         if Config.collecting_data:
             # Log each data point with the precise timestamp

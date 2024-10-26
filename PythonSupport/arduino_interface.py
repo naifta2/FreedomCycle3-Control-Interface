@@ -80,12 +80,11 @@ def read_arduino():
                 # Convert line to float, including 0.00
                 try:
                     flow_rate = float(line)
-                    print(f"Data read from Arduino: Flow Rate = {flow_rate} L/min")
                     return flow_rate
                 except ValueError:
                     print(f"Warning: Unable to convert '{line}' to float")
-                    return None
+                    return 0.00
         except serial.SerialException as se:
             print(f"SerialException: {se}")
             disconnect_arduino()
-    return None
+    return 0.00
