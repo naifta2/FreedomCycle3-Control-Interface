@@ -76,11 +76,7 @@ def read_arduino():
             print("in try")
             # Read a line from Arduino
             if Config.arduino.in_waiting > 0:
-                print("in if if ")
-                print("here here", Config.arduino.readline())
-                print("after line")
                 line = Config.arduino.readline().decode('utf-8').strip()
-                print("after line")
                 # Convert the line to a float value
                 data = float(line)
                 print(f"Data read from Arduino: Flow Rate = {data} L/min")
