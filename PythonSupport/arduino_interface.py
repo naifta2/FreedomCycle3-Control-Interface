@@ -70,12 +70,24 @@ def disconnect_arduino():
     Config.arduino = None
 
 def read_arduino():
-    """Reads data from the Arduino if connected."""
-    if Config.arduino and Config.arduino.is_open and Config.arduino.in_waiting > 0:
+    """Reads float data from the Arduino if connected."""
+    if Config.arduino and Config.arduino.is_open:
         try:
-            data = Config.arduino.readline().decode('utf-8').strip()
-            return data
-        except serial.SerialException as e:
-            print(f"Error reading from Arduino: {e}")
+            print("in try")
+            # Read a line from Arduino
+            if Config.arduino.in_waiting > 0:
+                print("in if if ")
+                print("here here", Config.arduino.readline())
+                print("after line")
+                line = Config.arduino.readline().decode('utf-8').strip()
+                print("after line")
+                # Convert the line to a float value
+                data = float(line)
+                print(f"Data read from Arduino: Flow Rate = {data} L/min")
+                return data
+        except ValueError as ve:
+            print(f"ValueError: Unable to convert '{line}' to float: {ve}")
+        except serial.SerialException as se:
+            print(f"SerialException: {se}")
             disconnect_arduino()
     return None
