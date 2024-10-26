@@ -45,7 +45,7 @@ The Freedom Cycle3 project focuses on developing a prototype that achieves 100 p
 ## Project Structure
 
 ```plaintext
-FreedomCycle3-Control-Interface/
+FreedomCycle3-Control-Interface
 │
 ├── main.py                          # Entry point for the interface
 │
