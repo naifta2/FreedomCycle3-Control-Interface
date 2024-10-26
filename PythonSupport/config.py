@@ -1,6 +1,7 @@
 # config.py
 
 import os
+import tkinter as tk
 
 class Config:
     # Data collection variables
@@ -22,3 +23,7 @@ class Config:
 
     # Path to the cloned FreedomCycle3-Logged-Data repository
     REPO_PATH = os.path.join(os.getcwd(), "FreedomCycle3-Logged-Data")
+
+class Widget:
+    def create(parent, widget_type, **options):
+        return widget_type(parent, **options)

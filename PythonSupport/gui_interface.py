@@ -1,64 +1,87 @@
 import time
 import tkinter as tk
-from PythonSupport.config import Config
+from PythonSupport.config import Config, Widget
 from PythonSupport.arduino_interface import connect_arduino, disconnect_arduino, read_arduino
 from PythonSupport.data_acquisition import initialize_session, start_collection, stop_collection, collect_data, save_data
 
-def setup_welcome_screen(root):
-    Config.is_welcome_screen = True
+def initialize_interface(window):
+    """Initializes the interface layout, including the persistent widgets."""
+    
+    # Persistent frame for widgets that stay across screens (e.g., connection status)
+    Config.persistent_frame = tk.Frame(window)
+    Config.persistent_frame.pack(side="top", fill="x")
 
-    Config.connection_status = tk.Label(root, text="Checking Arduino...", bg="yellow", font=("Helvetica", 12))
-    Config.connection_status.pack(pady=10)
+    # Persistent widget: Arduino connection status label
+    Config.connection_status = tk.Label(Config.persistent_frame, text="Checking Arduino...", bg="yellow", font=("Helvetica", 12))
+    Config.connection_status.pack(side="left", padx=20, pady=5)
 
-    Config.start_session_button = tk.Button(root, text="Start Work Session", font=("Helvetica", 14), command=lambda: start_work_session(root))
-    Config.start_session_button.pack(pady=10)
-    Config.start_session_button.config(state="disabled")
+    # Main content frame for screen-specific content
+    Config.main_content_frame = tk.Frame(window)
+    Config.main_content_frame.pack(expand=True, fill="both")
 
-    close_button = tk.Button(root, text="Close Program", font=("Helvetica", 14), command=root.destroy)
-    close_button.pack(pady=10)
+    # Start with the welcome screen
+    setup_welcome_screen(window)
 
-    continuous_check_arduino_connection(root)
-
-def continuous_check_arduino_connection(root):
-    if Config.is_welcome_screen:
-        if Config.arduino or connect_arduino():
-            if Config.connection_status:
-                Config.connection_status.config(bg="green", text="Arduino Connected")
-            if Config.start_session_button:
-                Config.start_session_button.config(state="normal")
-            print("GUI: Arduino connected")
-        else:
-            if Config.connection_status:
-                Config.connection_status.config(bg="red", text="No Arduino Connected")
-            if Config.start_session_button:
-                Config.start_session_button.config(state="disabled")
-            print("GUI: No Arduino Connected")
-
-    root.after(1000, lambda: continuous_check_arduino_connection(root))
-
-def start_work_session(root):
-    Config.is_welcome_screen = False
-    initialize_session()
-    show_session_screen(root)
-
-def show_session_screen(root):
-    if Config.after_id is not None:
-        root.after_cancel(Config.after_id)
-    for widget in root.winfo_children():
+def setup_welcome_screen(window):
+    """Sets up the welcome screen content in the main content frame."""
+    # Clear the main content frame
+    for widget in Config.main_content_frame.winfo_children():
         widget.destroy()
 
-    Config.flowrate_label = tk.Label(root, text="Current Flow Rate: --- L/min", font=("Helvetica", 14))
-    Config.flowrate_label.pack(pady=10)
+    Config.is_welcome_screen = True
 
-    Config.start_button = tk.Button(root, text="Start Collection", font=("Helvetica", 14), command=start_collection_handler)
-    Config.start_button.pack(pady=10)
+    # Welcome screen content
+    welcome_label = Widget.create(Config.main_content_frame, tk.Label, text="Welcome to FreedomCycle3 Interface", font=("Helvetica", 16))
+    welcome_label.pack(anchor="center", pady=20)
 
-    stop_button = tk.Button(root, text="Stop Session", font=("Helvetica", 14), command=lambda: stop_work_session(root))
-    stop_button.pack(pady=10)
+    Config.start_session_button = Widget.create(Config.main_content_frame, tk.Button, text="Start Work Session", font=("Helvetica", 14), command=lambda: start_work_session(window))
+    Config.start_session_button.pack(anchor="center", pady=10)
+    Config.start_session_button.config(state="disabled")
 
-    update_flowrate(root)  # Start the flow rate update loop
+    close_button = Widget.create(Config.main_content_frame, tk.Button, text="Close Program", font=("Helvetica", 14), command=window.destroy)
+    close_button.pack(anchor="center", pady=10)
+
+    continuous_check_arduino_connection(window)
+
+def continuous_check_arduino_connection(window):
+    """Checks Arduino connection and updates the persistent connection status label."""
+    if Config.is_welcome_screen:
+        if Config.arduino or connect_arduino():
+            Config.connection_status.config(bg="green", text="Arduino Connected")
+            Config.start_session_button.config(state="normal")
+            print("GUI: Arduino connected")
+        else:
+            Config.connection_status.config(bg="red", text="No Arduino Connected")
+            Config.start_session_button.config(state="disabled")
+            print("GUI: No Arduino Connected")
+    Config.connection_status.after(1000, lambda: continuous_check_arduino_connection(window))
+
+def start_work_session(window):
+    """Starts a new work session and sets up the session screen."""
+    Config.is_welcome_screen = False
+    initialize_session()
+    show_session_screen(window)
+
+def show_session_screen(window):
+    """Sets up the session screen content in the main content frame."""
+    # Clear the main content frame
+    for widget in Config.main_content_frame.winfo_children():
+        widget.destroy()
+
+    # Session screen content
+    Config.flowrate_label = tk.Label(Config.main_content_frame, text="Current Flow Rate: --- L/min", font=("Helvetica", 14))
+    Config.flowrate_label.pack(anchor="center", pady=10)
+
+    Config.start_button = tk.Button(Config.main_content_frame, text="Start Collection", font=("Helvetica", 14), command=start_collection_handler)
+    Config.start_button.pack(anchor="center", pady=10)
+
+    stop_button = tk.Button(Config.main_content_frame, text="Stop Session", font=("Helvetica", 14), command=lambda: stop_work_session(window))
+    stop_button.pack(anchor="center", pady=10)
+
+    update_flowrate(window)  # Start the flow rate update loop
 
 def start_collection_handler():
+    """Handles start/stop collection toggling."""
     if Config.collecting_data:
         stop_collection()
         save_data()
@@ -67,7 +90,8 @@ def start_collection_handler():
         start_collection()
         Config.start_button.config(text="Stop Collection")
 
-def update_flowrate(root):
+def update_flowrate(window):
+    """Updates the flow rate label with data from Arduino."""
     flowrate = read_arduino()
     timestamp = time.time()  # Precise timestamp for each reading
 
@@ -78,21 +102,20 @@ def update_flowrate(root):
             collect_data(flowrate, timestamp)
 
     # Schedule the next update sooner to improve responsiveness
-    if Config.flowrate_label:
-        Config.after_id = root.after(250, lambda: update_flowrate(root))
+    Config.after_id = window.after(250, lambda: update_flowrate(window))
 
-def stop_work_session(root):
+def stop_work_session(window):
+    """Ends the work session and returns to the welcome screen."""
     if Config.collecting_data:
         stop_collection()
         save_data()
     if Config.after_id is not None:
-        root.after_cancel(Config.after_id)
-    show_welcome_screen(root)
+        window.after_cancel(Config.after_id)
+    show_welcome_screen(window)
 
-def show_welcome_screen(root):
+def show_welcome_screen(window):
+    """Returns to the welcome screen content in the main content frame."""
     Config.is_welcome_screen = True
     if Config.after_id is not None:
-        root.after_cancel(Config.after_id)
-    for widget in root.winfo_children():
-        widget.destroy()
-    setup_welcome_screen(root)
+        window.after_cancel(Config.after_id)
+    setup_welcome_screen(window)
