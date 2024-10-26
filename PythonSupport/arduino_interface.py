@@ -73,16 +73,18 @@ def read_arduino():
     """Reads float data from the Arduino if connected."""
     if Config.arduino and Config.arduino.is_open:
         try:
-            print("in try")
-            # Read a line from Arduino
+            # Check if there's data to read
             if Config.arduino.in_waiting > 0:
                 line = Config.arduino.readline().decode('utf-8').strip()
-                # Convert the line to a float value
-                data = float(line)
-                print(f"Data read from Arduino: Flow Rate = {data} L/min")
-                return data
-        except ValueError as ve:
-            print(f"ValueError: Unable to convert '{line}' to float: {ve}")
+                
+                # Convert line to float, including 0.00
+                try:
+                    flow_rate = float(line)
+                    print(f"Data read from Arduino: Flow Rate = {flow_rate} L/min")
+                    return flow_rate
+                except ValueError:
+                    print(f"Warning: Unable to convert '{line}' to float")
+                    return None
         except serial.SerialException as se:
             print(f"SerialException: {se}")
             disconnect_arduino()
