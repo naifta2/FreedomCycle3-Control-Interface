@@ -24,7 +24,7 @@ void loop() {
     flowRate = (pulseCount / 3.75);  // 7.5 pulses per second per L/min for this sensor
 
     // Print flow rate in L/min
-    Serial.print(flowRate, "\n");
+    Serial.println(flowRate);
 
     // Reset pulse count and update time
     pulseCount = 0;
