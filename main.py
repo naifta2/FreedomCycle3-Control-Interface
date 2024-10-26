@@ -8,7 +8,7 @@ def main():
     window.title("FreedomCycle3 Control Interface")
 
     # Set window size and center it on the screen
-    window.geometry("400x300")
+    window.geometry("500x400")
     window.update_idletasks()
     width = window.winfo_width()
     height = window.winfo_height()

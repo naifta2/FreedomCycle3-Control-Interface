@@ -9,11 +9,14 @@ def initialize_interface(window):
     
     # Persistent frame for widgets that stay across screens (e.g., connection status)
     Config.persistent_frame = tk.Frame(window)
-    Config.persistent_frame.pack(side="top", fill="x")
+    Config.persistent_frame.pack(side="bottom", fill="x", anchor="center")
 
     # Persistent widget: Arduino connection status label
     Config.connection_status = tk.Label(Config.persistent_frame, text="Checking Arduino...", bg="yellow", font=("Helvetica", 12))
-    Config.connection_status.pack(side="left", padx=20, pady=5)
+    Config.connection_status.pack(pady=5)
+
+    Config.close_button = Widget.create(Config.persistent_frame, tk.Button, text="Close Program", font=("Helvetica", 14), command=window.destroy)
+    Config.close_button.pack(pady=5)
 
     # Main content frame for screen-specific content
     Config.main_content_frame = tk.Frame(window)
@@ -37,9 +40,6 @@ def setup_welcome_screen(window):
     Config.start_session_button = Widget.create(Config.main_content_frame, tk.Button, text="Start Work Session", font=("Helvetica", 14), command=lambda: start_work_session(window))
     Config.start_session_button.pack(anchor="center", pady=10)
     Config.start_session_button.config(state="disabled")
-
-    close_button = Widget.create(Config.main_content_frame, tk.Button, text="Close Program", font=("Helvetica", 14), command=window.destroy)
-    close_button.pack(anchor="center", pady=10)
 
     continuous_check_arduino_connection(window)
 
