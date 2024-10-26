@@ -18,6 +18,7 @@ class Config:
     flowrate_label = None      # Label to show the live flow rate
     start_button = None        # Button to start and stop data collection
     is_welcome_screen = True   # Tracks if the GUI is on the welcome screen
+    after_id = None            # Global variable to store the after() ID for flowrate updates
 
     # Path to the cloned FreedomCycle3-Logged-Data repository
     REPO_PATH = os.path.join(os.getcwd(), "FreedomCycle3-Logged-Data")

@@ -4,9 +4,6 @@ from PythonSupport.config import Config
 from PythonSupport.arduino_interface import connect_arduino, disconnect_arduino, read_arduino
 from PythonSupport.data_acquisition import initialize_session, start_collection, stop_collection, collect_data, save_data
 
-# Global variable to store the after() ID for flowrate updates
-after_id = None
-
 def setup_welcome_screen(root):
     Config.is_welcome_screen = True
 
@@ -40,15 +37,13 @@ def continuous_check_arduino_connection(root):
     root.after(1000, lambda: continuous_check_arduino_connection(root))
 
 def start_work_session(root):
-    global after_id  
     Config.is_welcome_screen = False
     initialize_session()
     show_session_screen(root)
 
 def show_session_screen(root):
-    global after_id  
-    if after_id is not None:
-        root.after_cancel(after_id)
+    if Config.after_id is not None:
+        root.after_cancel(Config.after_id)
     for widget in root.winfo_children():
         widget.destroy()
 
@@ -73,7 +68,6 @@ def start_collection_handler():
         Config.start_button.config(text="Stop Collection")
 
 def update_flowrate(root):
-    global after_id  
     flowrate = read_arduino()
     timestamp = time.time()  # Precise timestamp for each reading
 
@@ -85,22 +79,20 @@ def update_flowrate(root):
 
     # Schedule the next update sooner to improve responsiveness
     if Config.flowrate_label:
-        after_id = root.after(250, lambda: update_flowrate(root))
+        Config.after_id = root.after(250, lambda: update_flowrate(root))
 
 def stop_work_session(root):
-    global after_id  
     if Config.collecting_data:
         stop_collection()
         save_data()
-    if after_id is not None:
-        root.after_cancel(after_id)
+    if Config.after_id is not None:
+        root.after_cancel(Config.after_id)
     show_welcome_screen(root)
 
 def show_welcome_screen(root):
-    global after_id  
     Config.is_welcome_screen = True
-    if after_id is not None:
-        root.after_cancel(after_id)
+    if Config.after_id is not None:
+        root.after_cancel(Config.after_id)
     for widget in root.winfo_children():
         widget.destroy()
     setup_welcome_screen(root)
