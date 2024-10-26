@@ -18,3 +18,12 @@ class Logger:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             with open(Logger.log_file, "a") as f:
                 f.write(f"[{timestamp}] {message}\n")
+
+    @staticmethod
+    def close_log():
+        """Closes logging for the session by writing a session end message."""
+        if Logger.log_file:
+            with open(Logger.log_file, "a") as f:
+                f.write(f"--- Session ended at {datetime.now()} ---\n")
+            Logger.log_file = None
+

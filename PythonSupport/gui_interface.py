@@ -1,8 +1,8 @@
 import time
 import tkinter as tk
-from config import Config
-from arduino_interface import connect_arduino, disconnect_arduino, read_arduino
-from data_acquisition import initialize_session, start_collection, stop_collection, collect_data, save_data
+from PythonSupport.config import Config
+from PythonSupport.arduino_interface import connect_arduino, disconnect_arduino, read_arduino
+from PythonSupport.data_acquisition import initialize_session, start_collection, stop_collection, collect_data, save_data
 
 # Global variable to store the after() ID for flowrate updates
 after_id = None

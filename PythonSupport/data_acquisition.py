@@ -4,8 +4,8 @@ import csv
 import shutil
 import subprocess
 from datetime import datetime
-from config import Config
-from logger import Logger
+from PythonSupport.config import Config
+from PythonSupport.logger import Logger
 
 def initialize_session():
     """Creates a work session folder only in the submodule repository."""
@@ -23,9 +23,18 @@ def start_collection():
     Logger.log("Data collection started and data list cleared")
 
 def stop_collection():
-    """Stops data collection."""
+    """Stops data collection, saves final data, closes log, and pushes all changes."""
     Config.collecting_data = False
     Logger.log("Data collection stopped")
+    
+    # Final save and push of all data
+    save_data()  # Ensure all data is saved before pushing
+    
+    # Final push to ensure all changes are in the repository
+    push_to_repository(os.path.basename(Config.session_folder))
+
+    # Close logging for the session
+    Logger.close_log()
 
 def collect_data(flowrate, timestamp):
     """Collects data with precise timestamps."""
