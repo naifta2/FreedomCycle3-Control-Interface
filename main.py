@@ -1,5 +1,5 @@
 import tkinter as tk
-from gui_interface import setup_welcome_screen  # Only import setup_welcome_screen
+from PythonSupport.gui_interface import setup_welcome_screen  # Only import setup_welcome_screen
 
 # Initialize main Tkinter window
 root = tk.Tk()

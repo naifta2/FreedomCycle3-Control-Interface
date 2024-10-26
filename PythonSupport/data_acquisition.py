@@ -1,17 +1,19 @@
 import os
 import time
 import csv
+import shutil
+import subprocess
 from datetime import datetime
 from config import Config
 from logger import Logger
 
 def initialize_session():
-    """Creates a session folder and initializes the logger."""
+    """Creates a work session folder only in the submodule repository."""
     session_timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    Config.session_folder = os.path.join(os.getcwd(), session_timestamp)
+    Config.session_folder = os.path.join(Config.REPO_PATH, session_timestamp)  # Use submodule path only
     os.makedirs(Config.session_folder, exist_ok=True)
     Logger.start_logging(Config.session_folder)
-    Logger.log("Session folder created")
+    Logger.log("Session folder created in the submodule repository")
 
 def start_collection():
     """Starts data collection."""
@@ -33,15 +35,39 @@ def collect_data(flowrate, timestamp):
     Logger.log(f"Data appended: {Config.data[-1]}")
 
 def save_data():
-    """Saves collected data to a CSV file in the session folder."""
-    filename = os.path.join(Config.session_folder, "data_collected.csv")
+    """Saves collected data to the submodule repository and pushes updates to GitHub."""
+    filename = "data_collected.csv"
+    file_path = os.path.join(Config.session_folder, filename)
+    
     if Config.data:
-        with open(filename, "w", newline="") as file:
+        # Write data to the submodule session folder
+        with open(file_path, "w", newline="") as file:
             writer = csv.writer(file)
             writer.writerow(["Timestamp", "Elapsed Time (s)", "Flow Rate (L/min)"])
             writer.writerows(Config.data)
-        Logger.log(f"Data saved to {filename} with {len(Config.data)} entries.")
-        return filename
+        Logger.log(f"Data saved in submodule repository at {file_path} with {len(Config.data)} entries.")
+
+        # Commit and push changes to the GitHub submodule repository
+        push_to_repository(os.path.basename(Config.session_folder))
+        return file_path
     else:
         Logger.log("No data to save.")
         return None
+
+def push_to_repository(session_folder_name):
+    """Commits and pushes the session folder to the GitHub submodule repository."""
+    try:
+        # Change directory to the submodule repository path
+        os.chdir(Config.REPO_PATH)
+
+        # Stage, commit, and push the changes
+        subprocess.run(["git", "add", session_folder_name], check=True)
+        subprocess.run(["git", "commit", "-m", f"Add session data for {session_folder_name}"], check=True)
+        subprocess.run(["git", "push"], check=True)
+
+        Logger.log(f"Session data {session_folder_name} pushed to GitHub repository.")
+    except subprocess.CalledProcessError as e:
+        Logger.log(f"Error pushing session data to GitHub: {e}")
+    finally:
+        # Return to the original directory
+        os.chdir(os.path.dirname(__file__))

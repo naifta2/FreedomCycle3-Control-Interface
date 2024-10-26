@@ -1,5 +1,7 @@
 # config.py
 
+import os
+
 class Config:
     # Data collection variables
     data = []                  # Stores collected data
@@ -10,9 +12,12 @@ class Config:
     # Arduino connection
     arduino = None             # Holds the Arduino connection object
     
-    # GUI components (initialized to None, populated by GUI functions)
+    # GUI components
     connection_status = None   # Label to show Arduino connection status
     start_session_button = None  # Button to start the session
     flowrate_label = None      # Label to show the live flow rate
     start_button = None        # Button to start and stop data collection
     is_welcome_screen = True   # Tracks if the GUI is on the welcome screen
+
+    # Path to the cloned FreedomCycle3-Logged-Data repository
+    REPO_PATH = os.path.join(os.getcwd(), "FreedomCycle3-Logged-Data")
