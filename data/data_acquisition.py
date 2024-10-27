@@ -4,10 +4,12 @@ import os
 import threading
 import time
 import csv
+import subprocess
 from datetime import datetime
 from data.logger import setup_logging
 import logging
 import queue  # Import queue module
+from tkinter import messagebox
 from config.settings import DATA_DIR, DATA_SAVE_INTERVAL, AUTOSAVE_ENABLED
 
 class DataAcquisition:
@@ -96,5 +98,18 @@ class DataAcquisition:
                         writer.writerow(row)
                 self.logger.info(f"Data saved to {filename}.")
                 self.data.clear()
+                self.push_to_repository(filename)
             except Exception as e:
                 self.logger.error(f"Failed to save data: {e}")
+
+    def push_to_repository(session_folder_name):
+        """Commits and pushes the session folder to the GitHub submodule repository."""
+        try:
+            # Stage, commit, and push the changes
+            subprocess.run(["git", "add", session_folder_name], check=True)
+            subprocess.run(["git", "commit", "-m", f"Add session data for {session_folder_name}"], check=True)
+            subprocess.run(["git", "push"], check=True)
+
+            messagebox.showerror(f"Session data {session_folder_name} pushed to GitHub repository.")
+        except subprocess.CalledProcessError as e:
+            messagebox.showerror(f"Error pushing session data to GitHub: {e}")
