@@ -23,6 +23,7 @@ ASSETS_DIR = os.path.join(BASE_DIR, 'assets')
 
 # GitHub repository settings
 # REPO_PATH = os.path.join(BASE_DIR, 'FreedomCycle3-Logged-Data')
+BACK_UP = True      # Back up logged data to github repository.
 
 # GUI settings
 WINDOW_TITLE = "FreedomCycle3 Control Interface"

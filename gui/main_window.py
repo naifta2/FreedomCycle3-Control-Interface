@@ -4,8 +4,6 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
 import os
-from threading import Thread
-import time
 import logging
 from communication.sensor_manager import SensorManager
 from communication.arduino_interface import ArduinoConnection
@@ -20,6 +18,7 @@ class MainWindow(tk.Tk):
         super().__init__()
         self.title(WINDOW_TITLE)
         self.geometry(WINDOW_SIZE)
+        self.configure(bg='white')
         self.style = ttk.Style(self)
         apply_theme(self.style)
         self.logger = logging.getLogger(__name__)
@@ -32,37 +31,37 @@ class MainWindow(tk.Tk):
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
     def create_widgets(self):
-        # Load logos using resource_path
+        # Load logos
         university_logo_path = resource_path(os.path.join(ASSETS_DIR, 'university_logo.png'))
         sponsor_logo_path = resource_path(os.path.join(ASSETS_DIR, 'sponsor_logo.png'))
 
-        # Resize logos while preserving aspect ratio
+        # Resize logos
         logo_max_width = 150
         logo_max_height = 100
 
-        university_logo_image = Image.open(university_logo_path)
+        university_logo_image = Image.open(university_logo_path).convert("RGBA")
         university_logo_image.thumbnail((logo_max_width, logo_max_height), Image.LANCZOS)
         self.university_logo = ImageTk.PhotoImage(university_logo_image)
 
-        sponsor_logo_image = Image.open(sponsor_logo_path)
+        sponsor_logo_image = Image.open(sponsor_logo_path).convert("RGBA")
         sponsor_logo_image.thumbnail((logo_max_width, logo_max_height), Image.LANCZOS)
         self.sponsor_logo = ImageTk.PhotoImage(sponsor_logo_image)
 
         # Display logos
-        logo_frame = ttk.Frame(self)
+        logo_frame = tk.Frame(self, bg='white')
         logo_frame.pack(side="top", pady=10)
 
-        uni_logo_label = ttk.Label(logo_frame, image=self.university_logo)
+        uni_logo_label = tk.Label(logo_frame, image=self.university_logo, bg='white')
         uni_logo_label.pack(side="left", padx=10)
 
-        sponsor_logo_label = ttk.Label(logo_frame, image=self.sponsor_logo)
+        sponsor_logo_label = tk.Label(logo_frame, image=self.sponsor_logo, bg='white')
         sponsor_logo_label.pack(side="right", padx=10)
 
         # Serial Port Selection
-        port_frame = ttk.Frame(self)
+        port_frame = tk.Frame(self, bg='white')
         port_frame.pack(pady=10)
 
-        ttk.Label(port_frame, text="Select Serial Port:").pack(side="left", padx=5)
+        tk.Label(port_frame, text="Select Serial Port:", bg='white').pack(side="left", padx=5)
         self.port_combo = ttk.Combobox(port_frame, textvariable=self.selected_port, width=30)
         self.port_combo.pack(side="left", padx=5)
         self.port_combo.bind("<<ComboboxSelected>>", self.port_selected)
@@ -71,7 +70,7 @@ class MainWindow(tk.Tk):
         refresh_button.pack(side="left", padx=5)
 
         # Control Buttons
-        control_frame = ttk.Frame(self)
+        control_frame = tk.Frame(self, bg='white')
         control_frame.pack(pady=10)
 
         self.start_button = ttk.Button(control_frame, text="Start Session", command=self.start_session, state='disabled')
@@ -87,22 +86,22 @@ class MainWindow(tk.Tk):
         self.close_valve_button.pack(side="left", padx=10)
 
         # Arduino Connection Indicators
-        indicator_frame = ttk.Frame(self)
+        indicator_frame = tk.Frame(self, bg='white')
         indicator_frame.pack(pady=10)
 
-        self.connection_indicator = ttk.Label(indicator_frame, text="Arduino Disconnected", foreground="red")
+        self.connection_indicator = tk.Label(indicator_frame, text="Arduino Disconnected", fg="red", bg='white')
         self.connection_indicator.pack(side="left", padx=10)
 
-        self.data_indicator = ttk.Label(indicator_frame, text="No Data", foreground="red")
+        self.data_indicator = tk.Label(indicator_frame, text="No Data", fg="red", bg='white')
         self.data_indicator.pack(side="left", padx=10)
 
         # Sensor Data Display
-        data_frame = ttk.Frame(self)
+        data_frame = tk.Frame(self, bg="grey")
         data_frame.pack(pady=20)
 
-        self.flow1_var = tk.DoubleVar(value=0.0)
-        self.flow2_var = tk.DoubleVar(value=0.0)
-        self.pressure_var = tk.DoubleVar(value=0.0)
+        self.flow1_var = tk.DoubleVar(value=0.00)
+        self.flow2_var = tk.DoubleVar(value=0.00)
+        self.pressure_var = tk.DoubleVar(value=000.0)
 
         flow1_widget = LabeledValue(data_frame, "Flow Rate 1", self.flow1_var, unit="L/min")
         flow1_widget.pack(pady=5)
@@ -114,7 +113,7 @@ class MainWindow(tk.Tk):
         pressure_widget.pack(pady=5)
 
         # Status Bar
-        self.status_bar = StatusBar(self)
+        self.status_bar = StatusBar(self, bg="grey")
         self.status_bar.pack(side="bottom", fill="x")
 
         # Adjust window size to fit content
@@ -214,8 +213,6 @@ class MainWindow(tk.Tk):
                 data_received = True
             if data_received:
                 self.data_indicator.config(text="Receiving Data", foreground="green")
-            else:
-                self.data_indicator.config(text="No Data", foreground="red")
             self.after(100, self.update_gui)
         else:
             self.data_indicator.config(text="No Data", foreground="red")

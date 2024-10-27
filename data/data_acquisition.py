@@ -10,7 +10,7 @@ from data.logger import setup_logging
 import logging
 import queue  # Import queue module
 from tkinter import messagebox
-from config.settings import DATA_DIR, DATA_SAVE_INTERVAL, AUTOSAVE_ENABLED
+from config.settings import DATA_DIR, DATA_SAVE_INTERVAL, AUTOSAVE_ENABLED, BACK_UP
 
 class DataAcquisition:
     def __init__(self):
@@ -61,7 +61,8 @@ class DataAcquisition:
 
         self.logger.info("Session stopped.")
 
-        self.push_to_repository("data_sessions/" + self.session_start_time.strftime("%Y%m%d_%H%M%S"))
+        if BACK_UP:
+            self.push_to_repository("data_sessions/" + self.session_start_time.strftime("%Y%m%d_%H%M%S"))
 
 
     def collect_data(self):
