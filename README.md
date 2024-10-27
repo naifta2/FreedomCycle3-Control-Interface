@@ -1,48 +1,91 @@
 
-# FreedomCycle3-Control-Interface
+# FreedomCycle3 Control Interface
 
-**FreedomCycle3-Control-Interface** is a Python-based control and monitoring interface developed as part of the Freedom Cycle3 project, a senior design initiative aimed at enhancing power plant efficiency through a steam-driven water hammer mechanism for energy recycling. This interface integrates high-speed sensors and microcontrollers for real-time monitoring and data logging, helping to validate the Freedom Cycle’s potential for improved thermal efficiency.
+**FreedomCycle3 Control Interface** is a Python-based application designed to control and monitor the Freedom Cycle3 project,
+which aims to enhance power plant efficiency through a steam-driven water hammer mechanism for energy recycling.
+The interface provides real-time data visualization, control over hardware components, and robust data logging for analysis and validation.
 
-## Project Overview
+## **Project Overview**
 
-The Freedom Cycle3 project focuses on developing a prototype that achieves 100 psig pressure using a steam-driven water hammer mechanism, with key specifications including a 5 ms injector response time, a durable chassis, and robust control systems. This Python interface provides critical tools for data monitoring, flow rate control, and logging, enabling the team to capture precise data for Technology Readiness Level 3 (TRL3) validation.
+The Freedom Cycle3 project focuses on developing a prototype that achieves 100 psig pressure using a steam-driven water hammer mechanism.
+Key specifications include:
 
-## Features
+- **Fast Injector Response Time**: 5 ms injector response time.
+- **Durable Chassis**: Robust physical structure for operational stability.
+- **Advanced Control Systems**: Integration of multiple sensors and actuators.
 
-- **Real-Time Flow Rate Monitoring**: Displays current flow rates in the GUI with high responsiveness.
-- **Data Logging**: Logs flow rate data, timestamps, and other critical metrics for each session.
-- **Arduino Integration**: Controls and collects data from Arduino-based hardware with seamless serial communication.
-- **Session-Based Logging**: Each test session generates a separate data log, stored in a structured folder for easy access.
+This Python interface is essential for data monitoring, control, and logging, enabling the team to capture precise data for
+Technology Readiness Level 3 (TRL3) validation.
 
-## Requirements
+## **Features**
 
-- Python 3.9 or later
-- Arduino device (configured with necessary sensors)
-- Required Python libraries (Tkinter, PySerial)
+- **Real-Time Data Visualization**: Displays live readings from multiple sensors, including flow rates and pressure.
+- **Data Logging**: Logs sensor data with precise timestamps, saved in structured session folders.
+- **Hardware Control**: Provides control over hardware components like injection valves directly from the GUI.
+- **Robust Error Handling**: Detects and handles disconnections or errors gracefully, ensuring data integrity.
+- **Modular Design**: Easily expandable to include additional sensors or controls in the future.
+- **User-Friendly Interface**: Intuitive GUI with modern design elements, including logos and branding.
 
-## Installation
+## **Requirements**
 
-1. Clone this repository:
+- Python 3.8 or later
+- Arduino device (configured with necessary sensors and firmware)
+- Required Python libraries (listed in `requirements.txt`)
+- Git (for data repository synchronization)
+
+## **Installation**
+
+1. **Clone the Repository**:
+
    ```bash
    git clone https://github.com/naifta2/FreedomCycle3-Control-Interface.git
    cd FreedomCycle3-Control-Interface
    ```
 
-2. Install required libraries:
+2. **Set Up Virtual Environment (Optional but Recommended)**:
+
    ```bash
-   pip install pyserial
+   python -m venv venv
+   source venv/bin/activate  # On Windows, use venv\Scripts\activate
    ```
 
-## Usage
+3. **Install Dependencies**:
 
-1. Connect your Arduino device to your computer.
-2. Run the main interface:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Configure Settings**:
+
+   Update `config/settings.py` with the appropriate serial port and other configurations.
+
+5. **Upload Arduino Firmware**:
+
+   - Navigate to `Arduino/FreedomCycle3_Firmware/` and open `FreedomCycle3_Firmware.ino` in the Arduino IDE.
+   - Adjust sensor pins and calibration constants as per your hardware setup.
+   - Upload the firmware to your Arduino device.
+
+## **Usage**
+
+1. **Run the Application**:
+
    ```bash
    python main.py
    ```
-3. Use the GUI to start a work session, monitor live flow rates, and log data as needed. Each session’s data is saved in a dedicated folder for easy access.
 
-## Project Structure
+2. **Using the GUI**:
+
+   - **Start Session**: Click on "Start Session" to begin data collection.
+   - **Monitor Sensors**: View real-time sensor data updates in the GUI.
+   - **Control Hardware**: Use the provided buttons to control hardware components like injection valves.
+   - **Stop Session**: Click on "Stop Session" to end data collection and save data.
+
+3. **Data Storage**:
+
+   - Data is saved in the `data_sessions/` directory with timestamped folders.
+   - Logs are stored in the `logs/` directory for each session.
+
+## **Project Structure**
 
 ```plaintext
 FreedomCycle3-Control-Interface
@@ -55,21 +98,42 @@ FreedomCycle3-Control-Interface
     ├── arduino_interface.py         # Arduino connection and data handling
     ├── data_acquisition.py          # Data collection and logging functions
     └── logger.py                    # Logger for file-based session logs
+FreedomCycle3-Control-Interface/
+├── main.py               # Entry point of the application
+├── config/               # Contains configuration settings
+├── gui/                  # Manages the graphical user interface
+├── communication/        # Handles communication with the Arduino and sensors
+├── data/                 # Manages data acquisition, processing, and logging
+├── utils/                # Contains utility functions and custom exceptions
+├── assets/               # Stores logos and other static assets
+└── Arduino/              # Contains the Arduino firmware code
 ```
 
-## Module Details
+## **Modules Overview**
 
-- **main.py**: Launches the GUI interface and initializes the project.
-- **config.py**: Stores global variables and shared configurations for easy access across modules.
-- **gui_interface.py**: Defines the Tkinter-based GUI, including the welcome screen, live flow rate display, and control buttons.
-- **arduino_interface.py**: Manages Arduino connection, handles serial data reading, and attempts reconnection if the device disconnects.
-- **data_acquisition.py**: Handles data collection, including timestamp logging and saving data to CSV files for each test session.
-- **logger.py**: Logs session events to a `log.txt` file, providing a record of each action and reading for debugging and validation.
+- `main.py`: Entry point of the application.
+- `config/`: Contains configuration settings.
+- `gui/`: Manages the graphical user interface.
+- `communication/`: Handles communication with the Arduino and sensors.
+- `data/`: Manages data acquisition, processing, and logging.
+- `utils/`: Contains utility functions and custom exceptions.
+- `assets/`: Stores logos and other static assets.
+- `Arduino/`: Contains the Arduino firmware code.
 
-## Contributing
+## **Contributing**
 
 Contributions are welcome! Please open an issue or submit a pull request for suggestions or improvements.
 
-## License
+## **License**
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License. See the LICENSE file for details.
+
+## **Acknowledgments**
+
+- **University Name**: University of Illinois at Urbana-Champaign
+- **Sponsor**: Constellation Energy
+- **Team Members**: Naif Alotaibi, Kevin Cantieri, Vaani Chimnani, Anna Kovarik, & Colin Zimmers.
+
+## **Contact**
+
+For questions or support, please contact <ImprovedFreedomCyclePatent3@office365.illinois.edu>.
