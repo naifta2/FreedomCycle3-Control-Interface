@@ -2,3 +2,5 @@ __pycache__/
 *.pyc
 data_sessions/
 logs/
+.DS_Store
+.DS_store
