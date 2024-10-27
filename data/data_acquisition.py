@@ -61,11 +61,7 @@ class DataAcquisition:
 
         self.logger.info("Session stopped.")
 
-        try:
-            print("data_sessions/" +  self.session_start_time.strftime("%Y%m%d_%H%M%S"))
-            self.push_to_repository(DATA_DIR + self.session_start_time.strftime("%Y%m%d_%H%M%S"))
-        except:
-            messagebox.showerror("Failed to push data to repository. Please push data manually to the repository.")
+        self.push_to_repository("data_sessions/" + self.session_start_time.strftime("%Y%m%d_%H%M%S"))
 
 
     def collect_data(self):
@@ -109,7 +105,7 @@ class DataAcquisition:
             except Exception as e:
                 self.logger.error(f"Failed to save data: {e}")
 
-    def push_to_repository(session_folder_name):
+    def push_to_repository(self, session_folder_name):
         """Commits and pushes the session folder to the GitHub submodule repository."""
         try:
             # Stage, commit, and push the changes
