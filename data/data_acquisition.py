@@ -59,17 +59,14 @@ class DataAcquisition:
             self.save_thread.join()
         self.save_data()
 
+        self.logger.info("Session stopped.")
+
         try:
-            print(DATA_DIR)
-            print(type(DATA_DIR))
-            print(self.session_start_time.strftime("%Y%m%d_%H%M%S"))
-            print(type(self.session_start_time.strftime("%Y%m%d_%H%M%S")))
-            print(DATA_DIR + self.session_start_time.strftime("%Y%m%d_%H%M%S"))
+            print("data_sessions/" +  self.session_start_time.strftime("%Y%m%d_%H%M%S"))
             self.push_to_repository(DATA_DIR + self.session_start_time.strftime("%Y%m%d_%H%M%S"))
         except:
-                self.logger.error(f"Failed to push data to repository. Please push data manually to the repository.")
+            messagebox.showerror("Failed to push data to repository. Please push data manually to the repository.")
 
-        self.logger.info("Session stopped.")
 
     def collect_data(self):
         while self.collecting_data:
