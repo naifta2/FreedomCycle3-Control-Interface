@@ -58,6 +58,7 @@ class DataAcquisition:
         if self.save_thread:
             self.save_thread.join()
         self.save_data()
+        self.push_to_repository(DATA_DIR, self.session_start_time.strftime("%Y%m%d_%H%M%S"))
         self.logger.info("Session stopped.")
 
     def collect_data(self):
@@ -98,7 +99,6 @@ class DataAcquisition:
                         writer.writerow(row)
                 self.logger.info(f"Data saved to {filename}.")
                 self.data.clear()
-                self.push_to_repository(filename)
             except Exception as e:
                 self.logger.error(f"Failed to save data: {e}")
 

@@ -1,4 +1,0 @@
-2024-10-26 21:11:49 [INFO] Session started.
-2024-10-26 21:12:49 [ERROR] Failed to save data: dict contains fields not in fieldnames: 'RESSURE'
-2024-10-26 21:12:49 [ERROR] Failed to save data: dict contains fields not in fieldnames: 'RESSURE'
-2024-10-26 21:12:49 [INFO] Session stopped.

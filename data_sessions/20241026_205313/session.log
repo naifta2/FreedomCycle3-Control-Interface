@@ -1,6 +1,0 @@
-2024-10-26 20:53:13 [INFO] Session started.
-2024-10-26 20:53:13 [INFO] No data to save.
-2024-10-26 20:53:14 [ERROR] Error parsing sensor data: not enough values to unpack (expected 2, got 1)
-2024-10-26 20:54:13 [INFO] Data saved to /Users/ibn-der3an/Documents/School/Senior/ME 470/FreedomCycle3-Control-Interface/data_sessions/20241026_205313/data.csv.
-2024-10-26 20:54:13 [INFO] Session stopped.
-2024-10-26 21:07:30 [INFO] No active session to stop.
