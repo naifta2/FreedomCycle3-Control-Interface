@@ -113,6 +113,5 @@ class DataAcquisition:
             subprocess.run(["git", "commit", "-m", f"Add session data for {session_folder_name}"], check=True)
             subprocess.run(["git", "push"], check=True)
 
-            messagebox.showerror(f"Session data {session_folder_name} pushed to GitHub repository.")
         except subprocess.CalledProcessError as e:
             messagebox.showerror(f"Error pushing session data to GitHub: {e}")
