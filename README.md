@@ -88,16 +88,6 @@ Technology Readiness Level 3 (TRL3) validation.
 ## **Project Structure**
 
 ```plaintext
-FreedomCycle3-Control-Interface
-│
-├── main.py                          # Entry point for the interface
-│
-└── PythonSupport                    # Support files and modules for the project
-    ├── config.py                    # Global variables and configuration settings
-    ├── gui_interface.py             # Tkinter-based GUI and interface functions
-    ├── arduino_interface.py         # Arduino connection and data handling
-    ├── data_acquisition.py          # Data collection and logging functions
-    └── logger.py                    # Logger for file-based session logs
 FreedomCycle3-Control-Interface/
 ├── main.py               # Entry point of the application
 ├── config/               # Contains configuration settings
@@ -131,8 +121,11 @@ This project is licensed under the MIT License. See the LICENSE file for details
 ## **Acknowledgments**
 
 - **University Name**: University of Illinois at Urbana-Champaign
+- **Faculty Advisor**: Prof. Jiajun He
 - **Sponsor**: Constellation Energy
-- **Team Members**: Naif Alotaibi, Kevin Cantieri, Vaani Chimnani, Anna Kovarik, & Colin Zimmers.
+- **Sponsor Contact**: John Freeman
+- **Project Manager**: Fatemeh Cheraghi Pouria
+- **Team Members**: Naif Alotaibi, Kevin Cantieri, Vaani Chimnani, Anna Kovarik, & Colin Zimmers
 
 ## **Contact**
 
