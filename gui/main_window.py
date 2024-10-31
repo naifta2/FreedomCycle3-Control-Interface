@@ -101,7 +101,9 @@ class MainWindow(tk.Tk):
 
         self.flow1_var = tk.DoubleVar(value=0.00)
         self.flow2_var = tk.DoubleVar(value=0.00)
-        self.pressure_var = tk.DoubleVar(value=000.0)
+        self.pressure1_var = tk.DoubleVar(value=0.00)
+        self.pressure2_var = tk.DoubleVar(value=0.00)
+        self.pressure3_var = tk.DoubleVar(value=0.00)
 
         flow1_widget = LabeledValue(data_frame, "Flow Rate 1", self.flow1_var, unit="L/min")
         flow1_widget.pack(pady=5)
@@ -109,8 +111,14 @@ class MainWindow(tk.Tk):
         flow2_widget = LabeledValue(data_frame, "Flow Rate 2", self.flow2_var, unit="L/min")
         flow2_widget.pack(pady=5)
 
-        pressure_widget = LabeledValue(data_frame, "Pressure", self.pressure_var, unit="psi")
-        pressure_widget.pack(pady=5)
+        pressure1_widget = LabeledValue(data_frame, "Pressure 1", self.pressure1_var, unit="psi")
+        pressure1_widget.pack(pady=5)
+
+        pressure2_widget = LabeledValue(data_frame, "Pressure 2", self.pressure2_var, unit="psi")
+        pressure2_widget.pack(pady=5)
+
+        pressure3_widget = LabeledValue(data_frame, "Pressure 3", self.pressure3_var, unit="psi")
+        pressure3_widget.pack(pady=5)
 
         # Status Bar
         self.status_bar = StatusBar(self, bg="grey")
@@ -207,9 +215,16 @@ class MainWindow(tk.Tk):
             data_received = False
             while not self.sensor_manager.display_queue.empty():
                 data = self.sensor_manager.display_queue.get()
-                self.flow1_var.set(data.get('FLOW1', 0.0))
-                self.flow2_var.set(data.get('FLOW2', 0.0))
-                self.pressure_var.set(data.get('PRESSURE', 0.0))
+                if 'FLOW1' in data:
+                    self.flow1_var.set(data['FLOW1'])
+                if 'FLOW2' in data:
+                    self.flow2_var.set(data['FLOW2'])
+                if 'PRESSURE1' in data:
+                    self.pressure1_var.set(data['PRESSURE1'])
+                if 'PRESSURE2' in data:
+                    self.pressure2_var.set(data['PRESSURE2'])
+                if 'PRESSURE3' in data:
+                    self.pressure3_var.set(data['PRESSURE3'])
                 data_received = True
             if data_received:
                 self.data_indicator.config(text="Receiving Data", foreground="green")

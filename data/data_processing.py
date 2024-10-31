@@ -7,7 +7,7 @@ import logging
 def parse_sensor_data(line):
     try:
         data = {}
-        pairs = line.split(',')
+        pairs = line.strip().split(',')
         for pair in pairs:
             if ':' not in pair:
                 continue  # Skip invalid pairs

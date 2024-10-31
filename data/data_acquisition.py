@@ -90,8 +90,8 @@ class DataAcquisition:
                 return
             filename = os.path.join(self.session_folder, 'data.csv')
             try:
-                # Add 'elapsed_time' to fieldnames
-                fieldnames = ['timestamp', 'elapsed_time', 'FLOW1', 'FLOW2', 'PRESSURE']
+                # Update fieldnames to include new pressures
+                fieldnames = ['timestamp', 'elapsed_time', 'FLOW1', 'FLOW2', 'PRESSURE1', 'PRESSURE2', 'PRESSURE3']
                 file_exists = os.path.isfile(filename)
                 with open(filename, 'a', newline='') as csvfile:
                     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)

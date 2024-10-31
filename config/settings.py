@@ -11,9 +11,11 @@ TIMEOUT = 1
 # Data collection settings
 DATA_SAVE_INTERVAL = 60  # Save data every 60 seconds
 EXPECTED_RANGES = {
-    'FLOW1': (0, 100),      # Example expected range for flow rate sensor 1
-    'FLOW2': (0, 100),      # Example expected range for flow rate sensor 2
-    'PRESSURE': (0, 2000),  # Example expected range for pressure sensor
+    'FLOW1': (0, 100),
+    'FLOW2': (0, 100),
+    'PRESSURE1': (0, 200),
+    'PRESSURE2': (0, 200),
+    'PRESSURE3': (0, 200),
 }
 
 # Paths
