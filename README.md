@@ -114,7 +114,7 @@ FreedomCycle3-Control-Interface/
 
 Contributions are welcome! Please open an issue or submit a pull request for suggestions or improvements.
 
-## **License**
+## **License** [Just in case the sponsor wants to publish this later.]
 
 This project is licensed under the GNU Affero General Public License v3.0 License. See the LICENSE file for details.
 
