@@ -62,7 +62,7 @@ class DataAcquisition:
         self.logger.info("Session stopped.")
 
         if BACK_UP:
-            self.push_to_repository("data_sessions/" + self.session_start_time.strftime("%Y%m%d_%H%M%S"))
+            self.push_to_repository("data_sessions/" + self.session_start_time.strftime("%Y%m%d_%H%M%S"), self.session_start_time.strftime("%Y%m%d_%H%M%S"))
 
 
     def collect_data(self):
@@ -106,12 +106,12 @@ class DataAcquisition:
             except Exception as e:
                 self.logger.error(f"Failed to save data: {e}")
 
-    def push_to_repository(self, session_folder_name):
+    def push_to_repository(self, session_folder_name, session_name):
         """Commits and pushes the session folder to the GitHub submodule repository."""
         try:
             # Stage, commit, and push the changes
             subprocess.run(["git", "add", session_folder_name], check=True)
-            subprocess.run(["git", "commit", "-m", f"Add session data for {session_folder_name}"], check=True)
+            subprocess.run(["git", "commit", "-m", f"Add {session_name} session data."], check=True)
             subprocess.run(["git", "push"], check=True)
 
         except subprocess.CalledProcessError as e:
