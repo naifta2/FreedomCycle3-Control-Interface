@@ -9,7 +9,7 @@ const int pressureSensorPin3 = A2; // Analog pin for pressure transducer 3
 // Variables for sensor values
 volatile int pulseCount1 = 0;
 float flowRate1 = 0;
-float cumulativeFlow = 0;  // Cumulative flow in liters
+float cumulativeFlow = 0; // Variable to hold cumulative flow in liters
 float pressureValue1 = 0;
 float pressureValue2 = 0;
 float pressureValue3 = 0;
@@ -41,13 +41,13 @@ void loop() {
     // Calculate instantaneous flow rate (Flow 1)
     flowRate1 = (pulseCount1 + 4) / 10.0; // Q = (F + 4) / 10
 
-    // Calculate cumulative flow in liters
-    cumulativeFlow += pulseCount1 / 596.0; // Each pulse contributes 1/596 liter
+    // Update cumulative flow in liters
+    cumulativeFlow += pulseCount1 / 596.0; // Each pulse represents approximately 1/596 liter
 
     // Read pressure sensors
     pressureValue1 = analogRead(pressureSensorPin1);
     pressureValue2 = analogRead(pressureSensorPin2);
-    pressureValue3 = 0.00;
+    pressureValue3 = analogRead(pressureSensorPin3);
 
     // Convert analog readings to voltages
     float voltage1 = pressureValue1 * (5.0 / 1023.0);
@@ -100,5 +100,7 @@ void processCommand(String command) {
     digitalWrite(valvePin, HIGH);
   } else if (command == "CLOSE_VALVE") {
     digitalWrite(valvePin, LOW);
+  } else if (command == "RESET_CUMULATIVE_FLOW") {
+    cumulativeFlow = 0.0; // Reset cumulative flow counter
   }
 }

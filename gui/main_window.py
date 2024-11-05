@@ -108,7 +108,7 @@ class MainWindow(tk.Tk):
         flow1_widget = LabeledValue(data_frame, "Flow Rate 1", self.flow1_var, unit="L/min")
         flow1_widget.pack(pady=5)
 
-        flow2_widget = LabeledValue(data_frame, "Flow Rate 2", self.flow2_var, unit="L/min")
+        flow2_widget = LabeledValue(data_frame, "Cumulative Flow", self.flow2_var, unit="L")
         flow2_widget.pack(pady=5)
 
         pressure1_widget = LabeledValue(data_frame, "Pressure 1", self.pressure1_var, unit="psi")
@@ -179,7 +179,9 @@ class MainWindow(tk.Tk):
         self.close_valve_button.config(state='disabled')
         self.flow1_var.set(0.0)
         self.flow2_var.set(0.0)
-        self.pressure_var.set(0.0)
+        self.pressure1_var.set(0.0)
+        self.pressure2_var.set(0.0)
+        self.pressure3_var.set(0.0)
         self.data_indicator.config(text="No Data", foreground="red")
 
     def start_session(self):
@@ -187,7 +189,8 @@ class MainWindow(tk.Tk):
             if not self.sensor_manager or not self.sensor_manager.connected:
                 messagebox.showerror("Error", "Arduino is not connected.")
                 return
-            # Start data acquisition in sensor manager
+            # Start data acquisition in sensor manager and reset cumulative flow on Arduino
+            self.sensor_manager.arduino.write_command("RESET_CUMULATIVE_FLOW")  # Send reset command
             self.sensor_manager.start_data_acquisition()
             self.data_acquisition = DataAcquisition()
             self.data_acquisition.start_session(self.sensor_manager.data_queue)
@@ -217,8 +220,8 @@ class MainWindow(tk.Tk):
                 data = self.sensor_manager.display_queue.get()
                 if 'FLOW1' in data:
                     self.flow1_var.set(data['FLOW1'])
-                if 'FLOW2' in data:
-                    self.flow2_var.set(data['FLOW2'])
+                if 'CUMULATIVE_FLOW' in data:
+                    self.flow2_var.set(data['CUMULATIVE_FLOW'])
                 if 'PRESSURE1' in data:
                     self.pressure1_var.set(data['PRESSURE1'])
                 if 'PRESSURE2' in data:

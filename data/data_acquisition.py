@@ -13,7 +13,8 @@ from tkinter import messagebox
 from config.settings import DATA_DIR, DATA_SAVE_INTERVAL, AUTOSAVE_ENABLED, BACK_UP
 
 class DataAcquisition:
-    def __init__(self):
+    def __init__(self, serial_connection):
+        self.serial = serial_connection  # Serial connection to Arduino
         self.data_queue = None
         self.data = []
         self.collecting_data = False
@@ -32,6 +33,9 @@ class DataAcquisition:
         os.makedirs(self.session_folder, exist_ok=True)
         setup_logging(self.session_folder)
         self.logger.info("Session started.")
+        
+        # Send command to reset cumulative flow on Arduino
+        self.send_command("RESET_CUMULATIVE_FLOW")
 
         # Clear any old data in data_queue
         while not self.data_queue.empty():
@@ -64,7 +68,6 @@ class DataAcquisition:
         if BACK_UP:
             self.push_to_repository("data_sessions/" + self.session_start_time.strftime("%Y%m%d_%H%M%S"), self.session_start_time.strftime("%Y%m%d_%H%M%S"))
 
-
     def collect_data(self):
         while self.collecting_data:
             if self.data_queue is not None:
@@ -77,6 +80,12 @@ class DataAcquisition:
                         self.data.append(data_point)
                 except queue.Empty:
                     pass
+
+    def send_command(self, command):
+        """Sends a command to the Arduino."""
+        if self.serial and self.serial.is_open:
+            self.serial.write((command + "\n").encode())
+            self.logger.info(f"Sent command to Arduino: {command}")
 
     def autosave_data(self):
         while self.collecting_data:
@@ -91,7 +100,7 @@ class DataAcquisition:
             filename = os.path.join(self.session_folder, 'data.csv')
             try:
                 # Update fieldnames to include new pressures
-                fieldnames = ['timestamp', 'elapsed_time', 'FLOW1', 'FLOW2', 'PRESSURE1', 'PRESSURE2', 'PRESSURE3']
+                fieldnames = ['timestamp', 'elapsed_time', 'FLOW1', 'CUMULATIVE_FLOW', 'PRESSURE1', 'PRESSURE2', 'PRESSURE3']
                 file_exists = os.path.isfile(filename)
                 with open(filename, 'a', newline='') as csvfile:
                     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
