@@ -13,8 +13,7 @@ from tkinter import messagebox
 from config.settings import DATA_DIR, DATA_SAVE_INTERVAL, AUTOSAVE_ENABLED, BACK_UP
 
 class DataAcquisition:
-    def __init__(self, serial_connection):
-        self.serial = serial_connection  # Serial connection to Arduino
+    def __init__(self):
         self.data_queue = None
         self.data = []
         self.collecting_data = False
@@ -33,9 +32,6 @@ class DataAcquisition:
         os.makedirs(self.session_folder, exist_ok=True)
         setup_logging(self.session_folder)
         self.logger.info("Session started.")
-        
-        # Send command to reset cumulative flow on Arduino
-        self.send_command("RESET_CUMULATIVE_FLOW")
 
         # Clear any old data in data_queue
         while not self.data_queue.empty():
@@ -80,12 +76,6 @@ class DataAcquisition:
                         self.data.append(data_point)
                 except queue.Empty:
                     pass
-
-    def send_command(self, command):
-        """Sends a command to the Arduino."""
-        if self.serial and self.serial.is_open:
-            self.serial.write((command + "\n").encode())
-            self.logger.info(f"Sent command to Arduino: {command}")
 
     def autosave_data(self):
         while self.collecting_data:

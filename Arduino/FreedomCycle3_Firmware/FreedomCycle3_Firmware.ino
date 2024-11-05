@@ -38,8 +38,13 @@ void loop() {
     // Disable interrupt during calculation
     detachInterrupt(digitalPinToInterrupt(flowSensorPin1));
 
-    // Calculate instantaneous flow rate (Flow 1)
-    flowRate1 = (pulseCount1 + 4) / 10.0; // Q = (F + 4) / 10
+    if (pulseCount1 > 0){
+      // Calculate instantaneous flow rate (Flow 1)
+      flowRate1 = (pulseCount1 + 4) / 10.0; // Q = (F + 4) / 10
+    }
+    else{
+      flowRate1 = 0;
+    }
 
     // Update cumulative flow in liters
     cumulativeFlow += pulseCount1 / 596.0; // Each pulse represents approximately 1/596 liter
@@ -74,7 +79,7 @@ void loop() {
     Serial.print(",PRESSURE2:");
     Serial.print(pressureValue2);
     Serial.print(",PRESSURE3:");
-    Serial.println(pressureValue3);
+    Serial.println(0.00);
 
     // Reset pulse count and time
     pulseCount1 = 0;
