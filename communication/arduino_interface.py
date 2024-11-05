@@ -38,6 +38,7 @@ class ArduinoConnection:
         self.connected = False
 
     def read_line(self):
+        """Read a single line from the Arduino, decoding the data as UTF-8."""
         with self.lock:
             if self.connected:
                 try:
@@ -50,6 +51,7 @@ class ArduinoConnection:
                 raise ConnectionLostError("Arduino is not connected.")
 
     def write_command(self, command):
+        """Send a command to the Arduino."""
         with self.lock:
             if self.connected:
                 try:
@@ -60,7 +62,12 @@ class ArduinoConnection:
             else:
                 raise ConnectionLostError("Arduino is not connected.")
 
+    def reset_cumulative_flow(self):
+        """Send the command to reset cumulative flow on the Arduino."""
+        self.write_command("RESET_CUMULATIVE_FLOW")
+
     @staticmethod
     def list_available_ports():
+        """List all available serial ports."""
         ports = serial.tools.list_ports.comports()
         return [port.device for port in ports]
