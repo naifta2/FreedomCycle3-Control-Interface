@@ -2,16 +2,14 @@
 
 // Define sensor pins
 const int flowSensorPin1 = 21;
-const int flowSensorPin2 = 22;
 const int pressureSensorPin1 = A0; // Analog pin for pressure transducer 1
 const int pressureSensorPin2 = A1; // Analog pin for pressure transducer 2
 const int pressureSensorPin3 = A2; // Analog pin for pressure transducer 3
 
 // Variables for sensor values
 volatile int pulseCount1 = 0;
-volatile int pulseCount2 = 0;
 float flowRate1 = 0;
-float flowRate2 = 0;
+float cumulativeFlow = 0;  // Cumulative flow in liters
 float pressureValue1 = 0;
 float pressureValue2 = 0;
 float pressureValue3 = 0;
@@ -23,34 +21,33 @@ const int valvePin = 13;
 void setup() {
   Serial.begin(115200);
 
-  // Initialize flow sensor pins
+  // Initialize flow sensor pin
   pinMode(flowSensorPin1, INPUT_PULLUP);
-  pinMode(flowSensorPin2, INPUT_PULLUP);
 
   // Initialize valve control pin
   pinMode(valvePin, OUTPUT);
   digitalWrite(valvePin, LOW); // Valve is initially closed
 
-  // Attach interrupts for flow sensors
+  // Attach interrupt for Flow 1
   attachInterrupt(digitalPinToInterrupt(flowSensorPin1), countPulses1, FALLING);
-  attachInterrupt(digitalPinToInterrupt(flowSensorPin2), countPulses2, FALLING);
 }
 
 void loop() {
-  // Calculate flow rate every second
+  // Calculate flow rate and cumulative flow every second
   if (millis() - oldTime >= 1000) {
-    // Disable interrupts during calculation
+    // Disable interrupt during calculation
     detachInterrupt(digitalPinToInterrupt(flowSensorPin1));
-    detachInterrupt(digitalPinToInterrupt(flowSensorPin2));
 
-    // Calculate flow rates
-    flowRate1 = (pulseCount1 / 7.5); // Adjust based on sensor specs
-    flowRate2 = (pulseCount2 / 7.5);
+    // Calculate instantaneous flow rate (Flow 1)
+    flowRate1 = (pulseCount1 + 4) / 10.0; // Q = (F + 4) / 10
+
+    // Calculate cumulative flow in liters
+    cumulativeFlow += pulseCount1 / 596.0; // Each pulse contributes 1/596 liter
 
     // Read pressure sensors
     pressureValue1 = analogRead(pressureSensorPin1);
     pressureValue2 = analogRead(pressureSensorPin2);
-    pressureValue3 = analogRead(pressureSensorPin3);
+    pressureValue3 = 0.00;
 
     // Convert analog readings to voltages
     float voltage1 = pressureValue1 * (5.0 / 1023.0);
@@ -70,8 +67,8 @@ void loop() {
     // Send data
     Serial.print("FLOW1:");
     Serial.print(flowRate1);
-    Serial.print(",FLOW2:");
-    Serial.print(flowRate2);
+    Serial.print(",CUMULATIVE_FLOW:");
+    Serial.print(cumulativeFlow);
     Serial.print(",PRESSURE1:");
     Serial.print(pressureValue1);
     Serial.print(",PRESSURE2:");
@@ -79,14 +76,12 @@ void loop() {
     Serial.print(",PRESSURE3:");
     Serial.println(pressureValue3);
 
-    // Reset pulse counts and time
+    // Reset pulse count and time
     pulseCount1 = 0;
-    pulseCount2 = 0;
     oldTime = millis();
 
-    // Re-attach interrupts
+    // Re-attach interrupt
     attachInterrupt(digitalPinToInterrupt(flowSensorPin1), countPulses1, FALLING);
-    attachInterrupt(digitalPinToInterrupt(flowSensorPin2), countPulses2, FALLING);
   }
 
   // Check for incoming commands
@@ -98,10 +93,6 @@ void loop() {
 
 void countPulses1() {
   pulseCount1++;
-}
-
-void countPulses2() {
-  pulseCount2++;
 }
 
 void processCommand(String command) {
