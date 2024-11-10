@@ -8,7 +8,7 @@ import subprocess
 from datetime import datetime
 from data.logger import setup_logging
 import logging
-import queue  # Import queue module
+import queue
 from tkinter import messagebox
 from config.settings import DATA_DIR, DATA_SAVE_INTERVAL, AUTOSAVE_ENABLED, BACK_UP
 
@@ -90,7 +90,7 @@ class DataAcquisition:
             filename = os.path.join(self.session_folder, 'data.csv')
             try:
                 # Update fieldnames to include new pressures
-                fieldnames = ['timestamp', 'elapsed_time', 'FLOW1', 'CUMULATIVE_FLOW', 'PRESSURE1', 'PRESSURE2', 'PRESSURE3']
+                fieldnames = ['timestamp', 'elapsed_time', 'CUMULATIVE_FLOW', 'PRESSURE1', 'PRESSURE2', 'PRESSURE3', 'VALVE_STATE']
                 file_exists = os.path.isfile(filename)
                 with open(filename, 'a', newline='') as csvfile:
                     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)

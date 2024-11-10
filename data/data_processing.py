@@ -21,6 +21,7 @@ def parse_sensor_data(line):
             except ValueError:
                 logging.warning(f"Invalid value for {key}: {value}")
                 continue
+            
             if key in EXPECTED_RANGES:
                 min_val, max_val = EXPECTED_RANGES[key]
                 if min_val <= value <= max_val:
@@ -29,6 +30,7 @@ def parse_sensor_data(line):
                     logging.warning(f"Value out of range for {key}: {value}")
             else:
                 data[key] = value  # Handle unexpected keys
+
         data['timestamp'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         return data
     except Exception as e:
