@@ -27,7 +27,7 @@ class MainWindow(tk.Tk):
         self.data_receiving = tk.BooleanVar(value=False)
         self.sensor_manager = None
         self.data_acquisition = None
-        self.auto = AUTO
+        self.auto = False
         self.auto_mode_enabled = tk.BooleanVar(value=False)  # Indicator for autonomous mode
         self.create_widgets()
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -72,26 +72,29 @@ class MainWindow(tk.Tk):
         refresh_button.pack(side="left", padx=5)
 
         # Autonomous Mode Light Bulb Indicator
-        self.auto_mode_indicator = tk.Label(self, text="Auto Mode OFF", fg="grey", bg="white", font=("Arial", 12))
+        self.auto_mode_indicator = tk.Label(self, text="Auto Mode OFF", fg="grey", bg="black", font=("Arial", 12))
         self.auto_mode_indicator.pack(pady=5)
 
         # Analog Pressure Gauges
         self.pressure_gauge_1 = ttk.Progressbar(self, orient="horizontal", length=200, mode="determinate", maximum=200)
         self.pressure_gauge_1.pack(pady=10)
-        self.pressure_gauge_label_1 = tk.Label(self, text="Pressure 1", bg="white")
+        self.pressure_gauge_label_1 = tk.Label(self, text="Pressure 1", bg="black")
         self.pressure_gauge_label_1.pack()
 
         self.pressure_gauge_2 = ttk.Progressbar(self, orient="horizontal", length=200, mode="determinate", maximum=200)
         self.pressure_gauge_2.pack(pady=10)
-        self.pressure_gauge_label_2 = tk.Label(self, text="Pressure 2", bg="white")
+        self.pressure_gauge_label_2 = tk.Label(self, text="Pressure 2", bg="black")
         self.pressure_gauge_label_2.pack()
 
         # Control Buttons
         control_frame = tk.Frame(self, bg='white')
         control_frame.pack(pady=10)
 
-        self.start_auto_button = ttk.Button(control_frame, text="Start Autonomous Session", command=self.set_autonomous_mode(True), state='disabled')
+        self.start_auto_button = ttk.Button(control_frame, text="Start Auto Mode", command=self.enable_autonomous_mode, state='disabled')
         self.start_auto_button.pack(side="left", padx=10)
+
+        self.stop_auto_button = ttk.Button(control_frame, text="Stop Auto Mode", command=self.disable_autonomous_mode, state='disabled')
+        self.stop_auto_button.pack(side="left", padx=10)
         
         self.start_button = ttk.Button(control_frame, text="Start Session", command=self.start_session, state='disabled')
         self.start_button.pack(side="left", padx=10)
@@ -158,10 +161,12 @@ class MainWindow(tk.Tk):
             self.port_combo.current(0)
             self.selected_port.set(ports[0])
             self.start_button.config(state='normal')
+            self.start_auto_button.config(state='normal')
             self.connect_to_arduino()
         else:
             self.selected_port.set('')
             self.start_button.config(state='disabled')
+            self.start_auto_button.config(state='disabled')
             self.disconnect_from_arduino()
 
     def port_selected(self, event):
@@ -215,19 +220,27 @@ class MainWindow(tk.Tk):
             self.data_acquisition = DataAcquisition()
             self.data_acquisition.start_session(self.sensor_manager.data_queue)
             self.start_button.config(state='disabled')
-            self.start_auto_button.config(state='normal')
             self.stop_button.config(state='normal')
             self.status_bar.set_status("Session Started")
         except Exception as e:
             messagebox.showerror("Error", f"Failed to start session: {e}")
             self.status_bar.set_status("Error starting session")
     
-    def set_autonomous_mode(self, enabled):
-        """Enable or disable autonomous valve control on the Arduino."""
+    def enable_autonomous_mode(self, enabled=True):
+        """Enable autonomous valve control on the Arduino."""
         try:
             if self.sensor_manager and self.sensor_manager.connected:
+                start_button_state = "disabled" if enabled else "normal"
+                stop_button_state = "normal" if enabled else "disabled"
+                self.start_auto_button.config(state=start_button_state)
+                self.stop_auto_button.config(state=stop_button_state)
+
                 command = "ENABLE_AUTO" if enabled else "DISABLE_AUTO"
                 self.sensor_manager.arduino.write_command(command)
+
+                mode_status = "Auto Mode Enabled" if enabled else "Auto Mode Disabled"
+                self.status_bar.set_status(mode_status)
+
                 self.auto = enabled
                 self.auto_mode_enabled.set(enabled)
                 self.auto_mode_indicator.config(text="Auto Mode ON" if enabled else "Auto Mode OFF", fg="green" if enabled else "grey")
@@ -235,7 +248,32 @@ class MainWindow(tk.Tk):
                 messagebox.showerror("Error", "Arduino is not connected.")
         except Exception as e:
             messagebox.showerror("Error", f"Failed to open valve: {e}")
-            self.status_bar.set_status("Error opening valve")
+
+            self.status_bar.set_status("Error Enabling Auto Mode")
+
+    def disable_autonomous_mode(self, enabled=False):
+        """Disable autonomous valve control on the Arduino."""
+        try:
+            if self.sensor_manager and self.sensor_manager.connected:
+                start_button_state = "disabled" if enabled else "normal"
+                stop_button_state = "normal" if enabled else "disabled"
+                self.start_auto_button.config(state=start_button_state)
+                self.stop_auto_button.config(state=stop_button_state)
+
+                command = "ENABLE_AUTO" if enabled else "DISABLE_AUTO"
+                self.sensor_manager.arduino.write_command(command)
+
+                mode_status = "Auto Mode Enabled" if enabled else "Auto Mode Disabled"
+                self.status_bar.set_status(mode_status)
+
+                self.auto = enabled
+                self.auto_mode_enabled.set(enabled)
+                self.auto_mode_indicator.config(text="Auto Mode ON" if enabled else "Auto Mode OFF", fg="green" if enabled else "grey")
+            else:
+                messagebox.showerror("Error", "Arduino is not connected.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to open valve: {e}")
+            self.status_bar.set_status("Error Disabling Auto Mode")
 
     def stop_session(self):
         try:
@@ -245,7 +283,6 @@ class MainWindow(tk.Tk):
             if self.auto:
                 self.set_autonomous_mode(False)
             self.start_button.config(state='normal')
-            self.start_auto_button.config(state='disabled')
             self.stop_button.config(state='disabled')
             self.status_bar.set_status("Session Stopped")
         except Exception as e:
