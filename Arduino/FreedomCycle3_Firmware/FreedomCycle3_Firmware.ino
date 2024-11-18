@@ -81,7 +81,7 @@ void loop() {
     digitalWrite(LED2, LOW);
   }
   // && millis() - valveWaitTime 
-  if (autonomousMode && pressureValue2 <= 1 && cumulativeFlowStable() && millis() - valveWaitTime >= 5000) {
+  if (autonomousMode && pressureValue2 <= 0.1 && cumulativeFlowStable() && millis() - valveWaitTime >= 5000) {
     openValveTemporarily();
   }
 
@@ -133,7 +133,7 @@ bool cumulativeFlowStable() {
 void openValveTemporarily() {
   digitalWrite(valvePin, HIGH);
   digitalWrite(LED5, HIGH);
-  ValveState = 1;
+  ValveState = true;
   valveOpenTime = millis();
   isValveTemporarilyOpen = true;
 }
@@ -141,8 +141,14 @@ void openValveTemporarily() {
 void closeValve() {
   digitalWrite(valvePin, LOW);
   digitalWrite(LED5, LOW);
-  ValveState = 0;
+  ValveState = false;
   isValveTemporarilyOpen = false;
+}
+
+void openValve(){
+  digitalWrite(valvePin, HIGH);
+  digitalWrite(LED5, HIGH);
+  ValveState = true;
 }
 
 void checkCommands(HardwareSerial &serialPort) {
@@ -158,13 +164,9 @@ void countPulses1() {
 
 void processCommand(String command) {
   if (command == "OPEN_VALVE") {
-    digitalWrite(valvePin, HIGH);
-    digitalWrite(LED5, HIGH);
-    ValveState = true;
+    openValve();
   } else if (command == "CLOSE_VALVE") {
-    digitalWrite(valvePin, LOW);
-    digitalWrite(LED5, LOW);
-    autonomousMode = false;
+    closeValve();
   } else if (command == "RESET_CUMULATIVE_FLOW") {
     cumulativeFlow = 0.0;
   } else if (command == "ENABLE_AUTO") {
